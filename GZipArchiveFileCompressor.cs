@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using NLog.Targets;
+using Amazon.S3.Transfer;
+using Amazon.S3;
+using Amazon;
+using System;
+using System.Threading.Tasks;
 
 namespace nlog_test
 {
@@ -17,31 +17,56 @@ namespace nlog_test
     /// </summary>
     internal class GZipArchiveFileCompressor : IFileCompressor
     {
+        private const string bucketName = "testrino";
+        private const string keyNamePrefix = "nlog/";
+        private const string accessKey = "";
+        private const string secretKey = "";
+
+        // Specify your bucket region (an example region is shown).
+        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.APSoutheast2;
+        private static IAmazonS3 s3Client;
+
         /// <summary>
         /// Implements <see cref="IFileCompressor.CompressFile(string, string)"/> using the .Net4.5 specific <see cref="ZipArchive"/>
         /// </summary>
         public void CompressFile(string fileName, string archiveFileName)
         {
-            //using (var archiveStream = new FileStream(archiveFileName, FileMode.Create))
-            //using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, ))
-            //using (var originalFileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ))
-            //{
-            //    var zipArchiveEntry = archive.CreateEntry(Path.GetFileName(fileName));
-            //    using (var destination = zipArchiveEntry.Open())
-            //    {
-            //        originalFileStream.CopyTo(destination);
-            //    }
-            //}
             using (FileStream originalFileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (FileStream compressedFileStream = File.Create(Path.ChangeExtension(archiveFileName, ".gz")))
+                using (FileStream compressedFileStream = File.Create(archiveFileName))
                 {
                     using (GZipStream compressionStream = new GZipStream(compressedFileStream,CompressionMode.Compress))
                     {
                         originalFileStream.CopyTo(compressionStream);
-
                     }
                 }
+            }
+            UploadCompressedFile(archiveFileName).Wait();
+        }
+
+        private static async Task UploadCompressedFile(string archiveFileName)
+        {
+            var keyName = Path.GetFileName(archiveFileName);
+            try
+            {
+                var amazonS3Client = new AmazonS3Client(accessKey, secretKey, bucketRegion);
+                var fileTransferUtility = new TransferUtility(amazonS3Client);
+
+                var fileTransferUtilityRequest = new TransferUtilityUploadRequest
+                {
+                    BucketName = bucketName,
+                    Key = keyNamePrefix + keyName,
+                    FilePath = archiveFileName
+                };
+                await fileTransferUtility.UploadAsync(fileTransferUtilityRequest);
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine("Error encountered on server. Message:'{0}' when writing an object", e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unknown encountered on server. Message:'{0}' when writing an object", e.Message);
             }
         }
     }
