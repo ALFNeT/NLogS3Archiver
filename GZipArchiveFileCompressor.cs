@@ -41,10 +41,10 @@ namespace nlog_test
                     }
                 }
             }
-            UploadCompressedFile(archiveFileName).Wait();
+            UploadCompressedFile(archiveFileName);
         }
 
-        private static async Task UploadCompressedFile(string archiveFileName)
+        private static async void UploadCompressedFile(string archiveFileName)
         {
             var keyName = Path.GetFileName(archiveFileName);
             try
