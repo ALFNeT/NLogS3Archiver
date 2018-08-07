@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace nlog_test
 {
     /// <summary>
-    /// Builtin IFileCompressor implementation utilizing the .Net4.5 specific <see cref="ZipArchive"/> 
-    /// and is used as the default value for <see cref="FileTarget.FileCompressor"/> on .Net4.5.
+    /// Builtin IFileCompressor implementation utilizing the .Net4.5 specific <see cref="GZipStream"/> 
+    /// and is used as an optional value for <see cref="FileTarget.FileCompressor"/> on .Net4.5.
     /// So log files created via <see cref="FileTarget"/> can be zipped when archived
     /// w/o 3rd party zip library when run on .Net4.5 or higher.
     /// </summary>
