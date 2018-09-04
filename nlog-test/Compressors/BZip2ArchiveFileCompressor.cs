@@ -25,7 +25,7 @@ namespace nlog_test
                 {
                     try
                     {
-                        BZip2.Compress(fileToBeZippedAsStream, compressedFileStream, true, 4096);
+                        BZip2.Compress(fileToBeZippedAsStream, compressedFileStream, true, 5);
                     }
                     catch (Exception ex)
                     {
