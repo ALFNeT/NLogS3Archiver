@@ -23,8 +23,9 @@ namespace nlog_test
         {
            
             var logger = NLog.LogManager.GetCurrentClassLogger();
-            NLog.Targets.FileTarget.FileCompressor = new GZipArchiveFileCompressor();
-            foreach (var index in Range(1, 100000))
+            // NLog.Targets.FileTarget.FileCompressor = new GZipArchiveFileCompressor();
+            NLog.Targets.FileTarget.FileCompressor = new BZip2ArchiveFileCompressor();
+            foreach (var index in Range(1, 10000))
             { 
                 logger.Info(GenerateRandomString(2048));
             }

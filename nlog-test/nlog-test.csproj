@@ -59,10 +59,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BZip2ArchiveFileCompressor.cs" />
-    <Compile Include="S3Uploader.cs" />
-    <Compile Include="SecureFastRandom.cs" />
-    <Compile Include="GZipArchiveFileCompressor.cs" />
+    <Compile Include="Compressors\BZip2ArchiveFileCompressor.cs" />
+    <Compile Include="AWS\S3Uploader.cs" />
+    <Compile Include="Helpers\SecureFastRandom.cs" />
+    <Compile Include="Compressors\GZipArchiveFileCompressor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
